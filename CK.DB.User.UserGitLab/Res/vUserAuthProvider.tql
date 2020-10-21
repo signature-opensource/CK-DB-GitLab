@@ -1,0 +1,10 @@
+-- SetupConfig: { "AddRequires": "Model.CK.UserGitLabTable" } 
+-- 
+create transformer on CK.vUserAuthProvider
+as
+begin
+	inject "
+	union all
+	select UserId, 'GitLab', LastLoginTime from CK.tUserGitLab where UserId > 0
+	" after first part {select};
+end
