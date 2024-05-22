@@ -18,10 +18,11 @@ namespace CK.DB.User.UserGitLab.AuthScope.Tests
     {
 
         [Test]
-        public async Task non_user_google_ScopeSet_is_null()
+        public async Task non_user_google_ScopeSet_is_null_Async()
         {
             var user = TestHelper.StObjMap.StObjs.Obtain<UserTable>();
             var p = TestHelper.StObjMap.StObjs.Obtain<Package>();
+            Throw.DebugAssert( user != null && p != null );
             using( var ctx = new SqlStandardCallContext() )
             {
                 var id = await user.CreateUserAsync( ctx, 1, Guid.NewGuid().ToString() );
@@ -30,11 +31,12 @@ namespace CK.DB.User.UserGitLab.AuthScope.Tests
         }
 
         [Test]
-        public async Task setting_default_scopes_impact_new_users()
+        public async Task setting_default_scopes_impact_new_users_Async()
         {
             var user = TestHelper.StObjMap.StObjs.Obtain<UserTable>();
             var p = TestHelper.StObjMap.StObjs.Obtain<Package>();
             var factory = TestHelper.StObjMap.StObjs.Obtain<IPocoFactory<IUserGitLabInfo>>();
+            Throw.DebugAssert( user != null && p != null && factory != null );
             using( var ctx = new SqlStandardCallContext() )
             {
                 AuthScopeSet original = await p.ReadDefaultScopeSetAsync( ctx );
@@ -48,6 +50,7 @@ namespace CK.DB.User.UserGitLab.AuthScope.Tests
                     userInfo.GitLabAccountId = Guid.NewGuid().ToString();
                     await p.UserGitLabTable.CreateOrUpdateGitLabUserAsync( ctx, 1, id, userInfo );
                     var info = await p.UserGitLabTable.FindKnownUserInfoAsync( ctx, userInfo.GitLabAccountId );
+                    Throw.DebugAssert( info != null );
                     AuthScopeSet userSet = await p.ReadScopeSetAsync( ctx, info.UserId );
                     userSet.ToString().Should().Be( original.ToString() );
                 }
@@ -65,10 +68,11 @@ namespace CK.DB.User.UserGitLab.AuthScope.Tests
 
                 {
                     int id = await user.CreateUserAsync( ctx, 1, Guid.NewGuid().ToString() );
-                    IUserGitLabInfo userInfo = p.UserGitLabTable.CreateUserInfo<IUserGitLabInfo>();
+                    IUserGitLabInfo? userInfo = p.UserGitLabTable.CreateUserInfo<IUserGitLabInfo>();
                     userInfo.GitLabAccountId = Guid.NewGuid().ToString();
                     await p.UserGitLabTable.CreateOrUpdateGitLabUserAsync( ctx, 1, id, userInfo, UCLMode.CreateOnly | UCLMode.UpdateOnly );
-                    userInfo = (IUserGitLabInfo)(await p.UserGitLabTable.FindKnownUserInfoAsync( ctx, userInfo.GitLabAccountId )).Info;
+                    userInfo = (IUserGitLabInfo?)(await p.UserGitLabTable.FindKnownUserInfoAsync( ctx, userInfo.GitLabAccountId ))?.Info;
+                    Throw.DebugAssert( userInfo != null );
                     AuthScopeSet userSet = await p.ReadScopeSetAsync( ctx, id );
                     userSet.ToString().Should().Contain( "[W]thing" )
                                                .And.Contain( "[W]other" )

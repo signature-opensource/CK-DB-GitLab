@@ -19,9 +19,10 @@ namespace CK.DB.User.UserGitLab.Tests
         [Test]
         public void create_GitLab_user_and_check_read_info_object_method()
         {
-            var u = TestHelper.StObjMap.StObjs.Obtain<UserGitLabTable>();
             var user = TestHelper.StObjMap.StObjs.Obtain<UserTable>();
+            var p = TestHelper.StObjMap.StObjs.Obtain<UserGitLabTable>();
             var infoFactory = TestHelper.StObjMap.StObjs.Obtain<IPocoFactory<IUserGitLabInfo>>();
+            Throw.DebugAssert( user != null && p != null && infoFactory != null );
             using( var ctx = new SqlStandardCallContext() )
             {
                 var userName = Guid.NewGuid().ToString();
@@ -30,25 +31,26 @@ namespace CK.DB.User.UserGitLab.Tests
 
                 var info = infoFactory.Create();
                 info.GitLabAccountId = googleAccountId;
-                var created = u.CreateOrUpdateGitLabUser( ctx, 1, userId, info );
+                var created = p.CreateOrUpdateGitLabUser( ctx, 1, userId, info );
                 created.OperationResult.Should().Be( UCResult.Created );
-                var info2 = u.FindKnownUserInfo( ctx, googleAccountId );
-
+                var info2 = p.FindKnownUserInfo( ctx, googleAccountId );
+                Throw.DebugAssert( info2 != null );
                 info2.UserId.Should().Be( userId );
                 info2.Info.GitLabAccountId.Should().Be( googleAccountId );
 
-                u.FindKnownUserInfo( ctx, Guid.NewGuid().ToString() ).Should().BeNull();
+                p.FindKnownUserInfo( ctx, Guid.NewGuid().ToString() ).Should().BeNull();
                 user.DestroyUser( ctx, 1, userId );
-                u.FindKnownUserInfo( ctx, googleAccountId ).Should().BeNull();
+                p.FindKnownUserInfo( ctx, googleAccountId ).Should().BeNull();
             }
         }
 
         [Test]
-        public async Task create_GitLab_user_and_check_read_info_object_method_async()
+        public async Task create_GitLab_user_and_check_read_info_object_method_Async()
         {
-            var u = TestHelper.StObjMap.StObjs.Obtain<UserGitLabTable>();
             var user = TestHelper.StObjMap.StObjs.Obtain<UserTable>();
+            var p = TestHelper.StObjMap.StObjs.Obtain<UserGitLabTable>();
             var infoFactory = TestHelper.StObjMap.StObjs.Obtain<IPocoFactory<IUserGitLabInfo>>();
+            Throw.DebugAssert( user != null && p != null && infoFactory != null );
             using( var ctx = new SqlStandardCallContext() )
             {
                 var userName = Guid.NewGuid().ToString();
@@ -57,16 +59,16 @@ namespace CK.DB.User.UserGitLab.Tests
 
                 var info = infoFactory.Create();
                 info.GitLabAccountId = googleAccountId;
-                var created = await u.CreateOrUpdateGitLabUserAsync( ctx, 1, userId, info );
+                var created = await p.CreateOrUpdateGitLabUserAsync( ctx, 1, userId, info );
                 created.OperationResult.Should().Be( UCResult.Created );
-                var info2 = await u.FindKnownUserInfoAsync( ctx, googleAccountId );
-
+                var info2 = await p.FindKnownUserInfoAsync( ctx, googleAccountId );
+                Throw.DebugAssert( info2 != null );
                 info2.UserId.Should().Be( userId );
                 info2.Info.GitLabAccountId.Should().Be( googleAccountId );
 
-                (await u.FindKnownUserInfoAsync( ctx, Guid.NewGuid().ToString() )).Should().BeNull();
+                (await p.FindKnownUserInfoAsync( ctx, Guid.NewGuid().ToString() )).Should().BeNull();
                 await user.DestroyUserAsync( ctx, 1, userId );
-                (await u.FindKnownUserInfoAsync( ctx, googleAccountId )).Should().BeNull();
+                (await p.FindKnownUserInfoAsync( ctx, googleAccountId )).Should().BeNull();
             }
         }
 
@@ -81,12 +83,13 @@ namespace CK.DB.User.UserGitLab.Tests
         {
             var u = TestHelper.StObjMap.StObjs.Obtain<UserGitLabTable>();
             var user = TestHelper.StObjMap.StObjs.Obtain<UserTable>();
+            Throw.DebugAssert( u != null && user != null );
             using( var ctx = new SqlStandardCallContext() )
             {
                 string userName = "GitLab auth - " + Guid.NewGuid().ToString();
                 var googleAccountId = Guid.NewGuid().ToString( "N" );
                 var idU = user.CreateUser( ctx, 1, userName );
-                u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='GitLab'" )
+                u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='GitLab'" )!
                     .Rows.Should().BeEmpty();
                 var info = u.CreateUserInfo<IUserGitLabInfo>();
                 info.GitLabAccountId = googleAccountId;
@@ -94,7 +97,7 @@ namespace CK.DB.User.UserGitLab.Tests
                 u.Database.ExecuteScalar( $"select count(*) from CK.vUserAuthProvider where UserId={idU} and Scheme='GitLab'" )
                     .Should().Be( 1 );
                 u.DestroyGitLabUser( ctx, 1, idU );
-                u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='GitLab'" )
+                u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='GitLab'" )!
                     .Rows.Should().BeEmpty();
             }
         }
@@ -105,6 +108,7 @@ namespace CK.DB.User.UserGitLab.Tests
             var auth = TestHelper.StObjMap.StObjs.Obtain<Auth.Package>();
             // With IUserGitLabInfo POCO.
             var f = TestHelper.StObjMap.StObjs.Obtain<IPocoFactory<IUserGitLabInfo>>();
+            Throw.DebugAssert( auth != null && f != null );
             CK.DB.Auth.Tests.AuthTests.StandardTestForGenericAuthenticationProvider(
                 auth,
                 "GitLab",
@@ -136,6 +140,7 @@ namespace CK.DB.User.UserGitLab.Tests
         {
             var auth = TestHelper.StObjMap.StObjs.Obtain<Auth.Package>();
             var f = TestHelper.StObjMap.StObjs.Obtain<IPocoFactory<IUserGitLabInfo>>();
+            Throw.DebugAssert( auth != null && f != null );
             await Auth.Tests.AuthTests.StandardTestForGenericAuthenticationProviderAsync(
                 auth,
                 "GitLab",

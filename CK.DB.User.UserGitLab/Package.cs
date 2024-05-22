@@ -13,12 +13,5 @@ namespace CK.DB.User.UserGitLab
         void StObjConstruct( Actor.Package actorPackage, Auth.Package authPackage )
         {
         }
-
-        /// <summary>
-        /// Gets the user GitLab table.
-        /// </summary>
-        [InjectObject]
-        public UserGitLabTable UserGitLabTable { get; protected set; }
-
     }
 }
