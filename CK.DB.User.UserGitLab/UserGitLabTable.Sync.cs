@@ -57,7 +57,7 @@ namespace CK.DB.User.UserGitLab
         /// <param name="ctx">The call context to use.</param>
         /// <param name="googleAccountId">The google account identifier.</param>
         /// <returns>A <see cref="IdentifiedUserInfo{T}"/> or null if not found.</returns>
-        public IdentifiedUserInfo<IUserGitLabInfo> FindKnownUserInfo( ISqlCallContext ctx, string googleAccountId )
+        public IdentifiedUserInfo<IUserGitLabInfo>? FindKnownUserInfo( ISqlCallContext ctx, string googleAccountId )
         {
             using( var c = CreateReaderCommand( googleAccountId ) )
             {

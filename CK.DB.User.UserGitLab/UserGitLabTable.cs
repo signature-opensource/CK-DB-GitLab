@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using CK.DB.Auth;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CK.DB.User.UserGitLab
 {
@@ -17,6 +18,7 @@ namespace CK.DB.User.UserGitLab
     [SqlObjectItem( "transform:sUserDestroy" )]
     public abstract partial class UserGitLabTable : SqlTable, IGenericAuthenticationProvider<IUserGitLabInfo>
     {
+        [AllowNull]
         IPocoFactory<IUserGitLabInfo> _infoFactory;
 
         /// <summary>
@@ -28,6 +30,10 @@ namespace CK.DB.User.UserGitLab
         {
             _infoFactory = infoFactory;
         }
+
+        public bool CanCreatePayload => true;
+
+        object IGenericAuthenticationProvider.CreatePayload() => _infoFactory.Create();
 
         IUserGitLabInfo IGenericAuthenticationProvider<IUserGitLabInfo>.CreatePayload() => _infoFactory.Create();
 
@@ -49,7 +55,7 @@ namespace CK.DB.User.UserGitLab
         /// <param name="mode">Optionnaly configures Create, Update only or WithLogin behavior.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>The result.</returns>
-        public async Task<UCLResult> CreateOrUpdateGitLabUserAsync( ISqlCallContext ctx, int actorId, int userId, IUserGitLabInfo info, UCLMode mode = UCLMode.CreateOrUpdate, CancellationToken cancellationToken = default( CancellationToken ) )
+        public async Task<UCLResult> CreateOrUpdateGitLabUserAsync( ISqlCallContext ctx, int actorId, int userId, IUserGitLabInfo info, UCLMode mode = UCLMode.CreateOrUpdate, CancellationToken cancellationToken = default )
         {
             var r = await GitLabUserUCLAsync( ctx, actorId, userId, info, mode, cancellationToken ).ConfigureAwait( false );
             return r;
@@ -65,7 +71,7 @@ namespace CK.DB.User.UserGitLab
         /// <param name="actualLogin">Set it to false to avoid login side-effect (such as updating the LastLoginTime) on success.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>The <see cref="LoginResult"/>.</returns>
-        public async Task<LoginResult> LoginUserAsync( ISqlCallContext ctx, IUserGitLabInfo info, bool actualLogin = true, CancellationToken cancellationToken = default( CancellationToken ) )
+        public async Task<LoginResult> LoginUserAsync( ISqlCallContext ctx, IUserGitLabInfo info, bool actualLogin = true, CancellationToken cancellationToken = default )
         {
             var mode = actualLogin
                         ? UCLMode.UpdateOnly | UCLMode.WithActualLogin
@@ -83,7 +89,7 @@ namespace CK.DB.User.UserGitLab
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>The awaitable.</returns>
         [SqlProcedure( "sUserGitLabDestroy" )]
-        public abstract Task DestroyGitLabUserAsync( ISqlCallContext ctx, int actorId, int userId, CancellationToken cancellationToken = default( CancellationToken ) );
+        public abstract Task DestroyGitLabUserAsync( ISqlCallContext ctx, int actorId, int userId, CancellationToken cancellationToken = default );
 
         /// <summary>
         /// Raw call to manage GitLabUser. Since this should not be used directly, it is protected.
@@ -201,12 +207,12 @@ namespace CK.DB.User.UserGitLab
             return LoginUserAsync( ctx, info, actualLogin, cancellationToken );
         }
 
-        void IGenericAuthenticationProvider.DestroyUser( ISqlCallContext ctx, int actorId, int userId, string schemeSuffix )
+        void IGenericAuthenticationProvider.DestroyUser( ISqlCallContext ctx, int actorId, int userId, string? schemeSuffix )
         {
             DestroyGitLabUser( ctx, actorId, userId );
         }
 
-        Task IGenericAuthenticationProvider.DestroyUserAsync( ISqlCallContext ctx, int actorId, int userId, string schemeSuffix, CancellationToken cancellationToken )
+        Task IGenericAuthenticationProvider.DestroyUserAsync( ISqlCallContext ctx, int actorId, int userId, string? schemeSuffix, CancellationToken cancellationToken )
         {
             return DestroyGitLabUserAsync( ctx, actorId, userId, cancellationToken );
         }
