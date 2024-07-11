@@ -1,14 +1,13 @@
-using System;
-using Microsoft.Data.SqlClient;
-using System.Threading.Tasks;
 using CK.Core;
 using CK.DB.Actor;
-using CK.SqlServer;
-using NUnit.Framework;
-using System.Linq;
 using CK.DB.Auth;
-using System.Collections.Generic;
+using CK.SqlServer;
+using CK.Testing;
 using FluentAssertions;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using static CK.Testing.MonitorTestHelper;
 
 namespace CK.DB.User.UserGitLab.Tests
@@ -23,7 +22,7 @@ namespace CK.DB.User.UserGitLab.Tests
             var p = SharedEngine.Map.StObjs.Obtain<UserGitLabTable>();
             var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGitLabInfo>>();
             Throw.DebugAssert( user != null && p != null && infoFactory != null );
-            using( var ctx = new SqlStandardCallContext() )
+            using( var ctx = new SqlStandardCallContext( TestHelper.Monitor ) )
             {
                 var userName = Guid.NewGuid().ToString();
                 int userId = user.CreateUser( ctx, 1, userName );
@@ -51,7 +50,7 @@ namespace CK.DB.User.UserGitLab.Tests
             var p = SharedEngine.Map.StObjs.Obtain<UserGitLabTable>();
             var infoFactory = SharedEngine.Map.StObjs.Obtain<IPocoFactory<IUserGitLabInfo>>();
             Throw.DebugAssert( user != null && p != null && infoFactory != null );
-            using( var ctx = new SqlStandardCallContext() )
+            using( var ctx = new SqlStandardCallContext( TestHelper.Monitor ) )
             {
                 var userName = Guid.NewGuid().ToString();
                 int userId = await user.CreateUserAsync( ctx, 1, userName );
@@ -84,7 +83,7 @@ namespace CK.DB.User.UserGitLab.Tests
             var u = SharedEngine.Map.StObjs.Obtain<UserGitLabTable>();
             var user = SharedEngine.Map.StObjs.Obtain<UserTable>();
             Throw.DebugAssert( u != null && user != null );
-            using( var ctx = new SqlStandardCallContext() )
+            using( var ctx = new SqlStandardCallContext( TestHelper.Monitor ) )
             {
                 string userName = "GitLab auth - " + Guid.NewGuid().ToString();
                 var googleAccountId = Guid.NewGuid().ToString( "N" );
