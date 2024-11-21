@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CK.DB.User.UserGitLab.Tests.From
+namespace CK.DB.User.UserGitLab.Tests.From;
+
+[TestFixture]
+public class FromActorGroupTests : CK.DB.Actor.Tests.GroupTests
 {
-    [TestFixture]
-    public class FromActorGroupTests : CK.DB.Actor.Tests.GroupTests
-    {
-    }
 }
