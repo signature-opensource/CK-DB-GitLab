@@ -62,8 +62,8 @@ public class UserGitLabAuthScopeTests
             readback.ToString().ShouldBe( replaced.ToString() );
             // Default scopes have non W status!
             // This must not impact new users: their satus must always be be W.
-            readback.ToString().ShouldContain( "[R]thing" )
-                                        .And.Contain( "[A]other" );
+            readback.ToString().ShouldContain( "[R]thing" );
+            readback.ToString().ShouldContain( "[A]other" );
 
             {
                 int id = await user.CreateUserAsync( ctx, 1, Guid.NewGuid().ToString() );
@@ -73,9 +73,9 @@ public class UserGitLabAuthScopeTests
                 userInfo = (IUserGitLabInfo?)(await p.UserGitLabTable.FindKnownUserInfoAsync( ctx, userInfo.GitLabAccountId ))?.Info;
                 Throw.DebugAssert( userInfo != null );
                 AuthScopeSet userSet = await p.ReadScopeSetAsync( ctx, id );
-                userSet.ToString().ShouldContain( "[W]thing" )
-                                           .And.Contain( "[W]other" )
-                                           .And.Contain( "[W]nimp" );
+                userSet.ToString().ShouldContain( "[W]thing" );
+                userSet.ToString().ShouldContain( "[W]other" );
+                userSet.ToString().ShouldContain( "[W]nimp" );
             }
             await p.AuthScopeSetTable.SetScopesAsync( ctx, 1, original );
         }
