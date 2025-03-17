@@ -3,7 +3,7 @@ using CK.DB.Actor;
 using CK.DB.Auth;
 using CK.SqlServer;
 using CK.Testing;
-using FluentAssertions;
+using Shouldly;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -31,15 +31,15 @@ public class UserGitLabTests
             var info = infoFactory.Create();
             info.GitLabAccountId = googleAccountId;
             var created = p.CreateOrUpdateGitLabUser( ctx, 1, userId, info );
-            created.OperationResult.Should().Be( UCResult.Created );
+            created.OperationResult.ShouldBe( UCResult.Created );
             var info2 = p.FindKnownUserInfo( ctx, googleAccountId );
             Throw.DebugAssert( info2 != null );
-            info2.UserId.Should().Be( userId );
-            info2.Info.GitLabAccountId.Should().Be( googleAccountId );
+            info2.UserId.ShouldBe( userId );
+            info2.Info.GitLabAccountId.ShouldBe( googleAccountId );
 
-            p.FindKnownUserInfo( ctx, Guid.NewGuid().ToString() ).Should().BeNull();
+            p.FindKnownUserInfo( ctx, Guid.NewGuid().ToString() ).ShouldBeNull();
             user.DestroyUser( ctx, 1, userId );
-            p.FindKnownUserInfo( ctx, googleAccountId ).Should().BeNull();
+            p.FindKnownUserInfo( ctx, googleAccountId ).ShouldBeNull();
         }
     }
 
@@ -59,15 +59,15 @@ public class UserGitLabTests
             var info = infoFactory.Create();
             info.GitLabAccountId = googleAccountId;
             var created = await p.CreateOrUpdateGitLabUserAsync( ctx, 1, userId, info );
-            created.OperationResult.Should().Be( UCResult.Created );
+            created.OperationResult.ShouldBe( UCResult.Created );
             var info2 = await p.FindKnownUserInfoAsync( ctx, googleAccountId );
             Throw.DebugAssert( info2 != null );
-            info2.UserId.Should().Be( userId );
-            info2.Info.GitLabAccountId.Should().Be( googleAccountId );
+            info2.UserId.ShouldBe( userId );
+            info2.Info.GitLabAccountId.ShouldBe( googleAccountId );
 
-            (await p.FindKnownUserInfoAsync( ctx, Guid.NewGuid().ToString() )).Should().BeNull();
+            (await p.FindKnownUserInfoAsync( ctx, Guid.NewGuid().ToString() )).ShouldBeNull();
             await user.DestroyUserAsync( ctx, 1, userId );
-            (await p.FindKnownUserInfoAsync( ctx, googleAccountId )).Should().BeNull();
+            (await p.FindKnownUserInfoAsync( ctx, googleAccountId )).ShouldBeNull();
         }
     }
 
@@ -89,15 +89,15 @@ public class UserGitLabTests
             var googleAccountId = Guid.NewGuid().ToString( "N" );
             var idU = user.CreateUser( ctx, 1, userName );
             u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='GitLab'" )!
-                .Rows.Should().BeEmpty();
+                .Rows.ShouldBeEmpty();
             var info = u.CreateUserInfo<IUserGitLabInfo>();
             info.GitLabAccountId = googleAccountId;
             u.CreateOrUpdateGitLabUser( ctx, 1, idU, info );
             u.Database.ExecuteScalar( $"select count(*) from CK.vUserAuthProvider where UserId={idU} and Scheme='GitLab'" )
-                .Should().Be( 1 );
+                .ShouldBe( 1 );
             u.DestroyGitLabUser( ctx, 1, idU );
             u.Database.ExecuteReader( $"select * from CK.vUserAuthProvider where UserId={idU} and Scheme='GitLab'" )!
-                .Rows.Should().BeEmpty();
+                .Rows.ShouldBeEmpty();
         }
     }
 
