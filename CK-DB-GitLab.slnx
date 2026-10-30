@@ -6,8 +6,6 @@
     <File Path="NuGet.config" />
   </Folder>
   <Folder Name="/Tests/">
-    <Project Path="Tests/CK.DB.User.UserGitLab.AuthScope.Tests/CK.DB.User.UserGitLab.AuthScope.Tests.csproj" />
-    <Project Path="Tests/CK.DB.User.UserGitLab.Tests/CK.DB.User.UserGitLab.Tests.csproj" />
   </Folder>
   <Project Path="CK.DB.User.UserGitLab.AuthScope/CK.DB.User.UserGitLab.AuthScope.csproj" />
   <Project Path="CK.DB.User.UserGitLab/CK.DB.User.UserGitLab.csproj" />
